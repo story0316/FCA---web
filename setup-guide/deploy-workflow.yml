@@ -1,0 +1,49 @@
+# =============================================================
+# 이 파일을 Functional-Competency 저장소의
+# .github/workflows/deploy.yml 경로에 복사하세요.
+# =============================================================
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # 수동 실행 허용
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        # Vite 프로젝트는 dist/, Create React App은 build/ 에 빌드됩니다.
+
+      - name: Copy index.html to 404.html (SPA 라우팅 지원)
+        run: cp dist/index.html dist/404.html
+        # CRA 프로젝트라면: cp build/index.html build/404.html
+
+      - name: Deploy to FCA---web (gh-pages branch)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.DEPLOY_TOKEN }}
+          external_repository: story0316/FCA---web
+          publish_branch: gh-pages
+          publish_dir: ./dist
+          # CRA 프로젝트라면: publish_dir: ./build
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'deploy: ${{ github.sha }}'
