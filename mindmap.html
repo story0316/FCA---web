@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR OS — 시스템 마인드맵</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0F172A;
+  --surface: #1E293B;
+  --border: #334155;
+  --text: #F1F5F9;
+  --muted: #94A3B8;
+  --accent: #6366F1;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── 헤더 ── */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(15,23,42,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.header-logo { font-size: 24px; }
+.header-title { font-size: 16px; font-weight: 800; }
+.header-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.header-search {
+  margin-left: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  color: var(--text);
+  font-size: 13px;
+  width: 220px;
+  outline: none;
+}
+.header-search:focus { border-color: var(--accent); }
+.header-search::placeholder { color: var(--muted); }
+
+/* ── 뷰 토글 ── */
+.view-toggle {
+  display: flex; gap: 6px;
+  padding: 14px 20px 0;
+}
+.view-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.view-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ── 통계 배지 ── */
+.stats-bar {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.stat-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 11px; color: var(--muted);
+}
+.stat-chip strong { color: var(--text); font-size: 13px; }
+
+/* ── 마인드맵 뷰 ── */
+#mindmap-view {
+  padding: 24px 20px 60px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+/* 도메인 카드 */
+.domain-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color .2s, transform .15s;
+}
+.domain-card:hover { transform: translateY(-1px); }
+
+.domain-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+}
+.domain-icon { font-size: 28px; flex-shrink: 0; }
+.domain-meta { flex: 1; min-width: 0; }
+.domain-name-ko { font-size: 14px; font-weight: 800; }
+.domain-name-en { font-size: 10px; font-weight: 600; opacity: .7; margin-top: 1px; }
+.domain-count {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.08);
+  flex-shrink: 0;
+}
+.domain-arrow {
+  font-size: 16px; color: var(--muted);
+  transition: transform .2s;
+  flex-shrink: 0;
+}
+.domain-card.open .domain-arrow { transform: rotate(90deg); }
+
+/* 서브그룹 */
+.domain-body {
+  display: none;
+  padding: 0 18px 16px;
+  border-top: 1px solid var(--border);
+}
+.domain-card.open .domain-body { display: block; }
+
+.subgroup-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 12px 0 6px;
+  opacity: .7;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.feature-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 10px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 12px; font-weight: 600;
+  transition: all .15s;
+  cursor: pointer;
+}
+.feature-link:hover {
+  background: rgba(255,255,255,.09);
+  border-color: var(--hover-color, var(--accent));
+  color: var(--hover-color, var(--accent));
+  transform: translateY(-1px);
+}
+.feature-icon { font-size: 17px; flex-shrink: 0; line-height: 1; }
+
+/* 관리자 전용 배지 */
+.admin-badge {
+  font-size: 9px; padding: 1px 5px;
+  background: rgba(99,102,241,.25); color: #A5B4FC;
+  border-radius: 4px; margin-left: auto; flex-shrink: 0;
+}
+
+/* ── 테이블 뷰 ── */
+#table-view { display: none; padding: 20px; }
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.table-wrap table {
+  width: 100%; border-collapse: collapse;
+}
+.table-wrap th {
+  text-align: left; font-size: 11px; font-weight: 700;
+  color: var(--muted); text-transform: uppercase; letter-spacing: .05em;
+  padding: 10px 16px;
+  background: rgba(255,255,255,.04);
+  border-bottom: 1px solid var(--border);
+}
+.table-wrap td {
+  padding: 9px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  vertical-align: middle;
+}
+.table-wrap tr:last-child td { border-bottom: none; }
+.table-wrap tr:hover td { background: rgba(255,255,255,.04); }
+.table-wrap a { color: var(--text); text-decoration: none; }
+.table-wrap a:hover { color: var(--accent); }
+.domain-chip {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* ── 검색 하이라이트 ── */
+.hidden { display: none !important; }
+mark { background: rgba(99,102,241,.4); color: #fff; border-radius: 3px; padding: 0 2px; }
+
+/* ── 반응형 ── */
+@media (min-width: 600px) {
+  .feature-grid { grid-template-columns: 1fr 1fr 1fr; }
+  #mindmap-view { grid-template-columns: 1fr 1fr; gap: 16px; }
+}
+@media (min-width: 1024px) {
+  .feature-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  #mindmap-view { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* 페이지 상단 앵커 */
+.back-to-top {
+  position: fixed; bottom: 20px; right: 20px;
+  width: 40px; height: 40px;
+  background: var(--accent);
+  border: none; border-radius: 50%;
+  color: #fff; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 14px rgba(99,102,241,.5);
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s;
+  z-index: 200;
+}
+.back-to-top.visible { opacity: 1; pointer-events: auto; }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<header class="header">
+  <div class="header-logo">🗺️</div>
+  <div>
+    <div class="header-title">HR OS 시스템 마인드맵</div>
+    <div class="header-sub">전체 기능을 도메인별로 탐색하세요</div>
+  </div>
+  <input class="header-search" type="search" id="search" placeholder="🔍 기능 검색…" autocomplete="off">
+</header>
+
+<!-- 뷰 토글 + 통계 -->
+<div class="view-toggle">
+  <button class="view-btn active" data-view="mindmap">🗺 마인드맵</button>
+  <button class="view-btn" data-view="table">📋 목록 보기</button>
+</div>
+<div class="stats-bar" id="stats-bar"></div>
+
+<!-- 마인드맵 뷰 -->
+<div id="mindmap-view"></div>
+
+<!-- 테이블 뷰 -->
+<div id="table-view">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>아이콘</th>
+          <th>기능명</th>
+          <th>도메인</th>
+          <th>그룹</th>
+          <th>역할</th>
+          <th>경로</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<button class="back-to-top" id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ══════════════════════════════════════════════
+//  데이터 — DOMAINS
+// ══════════════════════════════════════════════
+const APP_BASE = window.location.origin + '/'; // 앱 기본 URL (index.html)
+
+const DOMAINS = [
+  {
+    id: 'talent', icon: '🎯', nameKo: '인재 확보', name: 'Talent Acquisition',
+    color: '#6366F1', bg: 'rgba(99,102,241,.12)',
+    features: [
+      { icon: '📢', title: '채용공고',         hash: '#/jobs',               group: '채용' },
+      { icon: '📋', title: '지원자 현황',       hash: '#/applicant',          group: '채용', roles: ['admin'] },
+      { icon: '🧪', title: '인적성 관리',       hash: '#/aptitude',           group: '채용', roles: ['admin'] },
+      { icon: '🤝', title: '직원 추천',         hash: '#/employee-referral',  group: '채용' },
+      { icon: '🔍', title: '레퍼런스 체크',     hash: '#/reference-check',    group: '채용', roles: ['admin'] },
+      { icon: '📊', title: '채용 트래커',       hash: '#/admin?tab=recruitment', group: '채용', roles: ['admin'] },
+    ],
+  },
+  {
+    id: 'onboarding', icon: '🚀', nameKo: '입·퇴사 관리', name: 'Onboarding & Offboarding',
+    color: '#10B981', bg: 'rgba(16,185,129,.12)',
+    features: [
+      { icon: '🎉', title: '온보딩',            hash: '#/onboarding',         group: '입사' },
+      { icon: '🪪', title: '사원증',            hash: '#/id-card',            group: '입사' },
+      { icon: '🪑', title: '데스크 셋업',       hash: '#/desk-setup',         group: '입사' },
+      { icon: '👕', title: '유니폼 신청',       hash: '#/uniform',            group: '입사' },
+      { icon: '💻', title: '재택 장비',         hash: '#/remote-equipment',   group: '입사' },
+      { icon: '👋', title: '오프보딩',          hash: '#/offboarding',        group: '퇴사' },
+      { icon: '🎓', title: '온보딩 관리',       hash: '#/admin?tab=onboarding', group: '관리자', roles: ['admin'] },
+      { icon: '🚪', title: '오프보딩 관리',     hash: '#/admin?tab=offboarding', group: '관리자', roles: ['admin'] },
+    ],
+  },
+  {
+    id: 'people', icon: '🏢', nameKo: '인사 조직', name: 'People & Organization',
+    color: '#F59E0B', bg: 'rgba(245,158,11,.12)',
+    features: [
+      { icon: '🏢', title: '조직도',            hash: '#/org-chart',          group: '조직' },
+      { icon: '📋', title: '인사발령',          hash: '#/personnel-order',    group: '조직', roles: ['admin'] },
+      { icon: '🔄', title: '사내 이동 신청',    hash: '#/internal-transfer',  group: '조직' },
+      { icon: '👥', title: '인원 계획',         hash: '#/admin?tab=headcount', group: '조직', roles: ['admin'] },
+      { icon: '✏️', title: '개인정보 변경',     hash: '#/info-update',        group: '인사 서류' },
+      { icon: '🆘', title: '비상연락망',        hash: '#/emergency-contact',  group: '인사 서류' },
+      { icon: '📄', title: '서류 발급',         hash: '#/document-request',   group: '인사 서류' },
+      { icon: '📜', title: '증명서 발급',       hash: '#/certificate',        group: '인사 서류' },
+      { icon: '🏖️', title: '휴직 신청',         hash: '#/loa',                group: '인사 서류' },
+      { icon: '📁', title: '인사 이력',         hash: '#/admin?tab=personnel', group: '인사 서류', roles: ['admin'] },
+    ],
+  },
+  {
+    id: 'time', icon: '⏱️', nameKo: '근태 관리', name: 'Time & Attendance',
+    color: '#3B82F6', bg: 'rgba(59,130,246,.12)',
+    features: [
+      { icon: '📍', title: '근태',              hash: '#/attendance',         group: '출근·휴가' },
+      { icon: '⏰', title: '출퇴근',            hash: '#/commute',            group: '출근·휴가' },
+      { icon: '📅', title: '휴가',              hash: '#/leave',              group: '출근·휴가' },
+      { icon: '👶', title: '모성보호',          hash: '#/parental-leave',     group: '출근·휴가' },
+      { icon: '⌚', title: '연장근무',          hash: '#/overtime-request',   group: '근무 형태' },
+      { icon: '🕐', title: '유연근무',          hash: '#/flexible-work',      group: '근무 형태' },
+      { icon: '🏠', title: '재택근무',          hash: '#/remote-work',        group: '근무 형태' },
+      { icon: '🌏', title: '해외 원격근무',     hash: '#/work-from-abroad',   group: '근무 형태' },
+      { icon: '📊', title: '근태 현황',         hash: '#/admin?tab=attendance', group: '관리자', roles: ['admin'] },
+      { icon: '🚌', title: '셔틀버스',          hash: '#/shuttle',            group: '출퇴근 지원' },
+      { icon: '🚗', title: '주차',              hash: '#/parking',            group: '출퇴근 지원' },
+      { icon: '🍱', title: '식권',              hash: '#/meal-ticket',        group: '출퇴근 지원' },
+      { icon: '🍽️', title: '점심 주문',         hash: '#/lunch-order',        group: '출퇴근 지원' },
+    ],
+  },
+  {
+    id: 'compensation', icon: '💰', nameKo: '보상 복지', name: 'Compensation & Benefits',
+    color: '#8B5CF6', bg: 'rgba(139,92,246,.12)',
+    features: [
+      { icon: '💰', title: '급여명세서',        hash: '#/payslip',            group: '급여·보상' },
+      { icon: '💵', title: '급여 계산',         hash: '#/salary-calc',        group: '급여·보상' },
+      { icon: '📑', title: '연봉 계약',         hash: '#/salary-contract',    group: '급여·보상' },
+      { icon: '📈', title: '연봉 인상 요청',    hash: '#/salary-raise',       group: '급여·보상' },
+      { icon: '📊', title: '스톡옵션',          hash: '#/stock-option',       group: '급여·보상' },
+      { icon: '🎁', title: '복리후생',          hash: '#/benefits',           group: '복지' },
+      { icon: '✅', title: '복지 혜택 등록',    hash: '#/benefit-enroll',     group: '복지' },
+      { icon: '💎', title: '복지 포인트',       hash: '#/welfare-points',     group: '복지' },
+      { icon: '🛒', title: '복지 포인트 샵',    hash: '#/welfare-shop',       group: '복지' },
+      { icon: '🎀', title: '선택 복지',         hash: '#/flexible-benefit',   group: '복지' },
+      { icon: '💸', title: '경비 정산',         hash: '#/expense',            group: '경비·출장' },
+      { icon: '✈️', title: '출장 신청',         hash: '#/business-trip',      group: '경비·출장' },
+      { icon: '👶', title: '보육 지원',         hash: '#/childcare',          group: '생활 지원' },
+      { icon: '🚚', title: '이사 지원',         hash: '#/relocation',         group: '생활 지원' },
+      { icon: '🎊', title: '경조사 지원',       hash: '#/anniversary',        group: '생활 지원' },
+    ],
+  },
+  {
+    id: 'learning', icon: '📚', nameKo: '학습 성장', name: 'Learning & Growth',
+    color: '#EC4899', bg: 'rgba(236,72,153,.12)',
+    features: [
+      { icon: '🎓', title: '사내 교육',         hash: '#/training',           group: '학습 실행' },
+      { icon: '📚', title: '법정교육',          hash: '#/legal-edu',          group: '학습 실행' },
+      { icon: '🏅', title: '자격증',            hash: '#/certification',      group: '학습 실행' },
+      { icon: '💳', title: '교육비 지원',       hash: '#/edu-support',        group: '학습 실행' },
+      { icon: '🗣️', title: '어학 수강',         hash: '#/language-class',     group: '학습 실행' },
+      { icon: '🏕️', title: '워크샵',            hash: '#/workshop',           group: '학습 실행' },
+      { icon: '🎤', title: '세미나',            hash: '#/seminar',            group: '학습 실행' },
+      { icon: '📖', title: '도서 신청',         hash: '#/book-order',         group: '학습 실행' },
+      { icon: '🤝', title: '멘토링',            hash: '#/mentoring',          group: '경력 개발' },
+      { icon: '🔗', title: '멘토 매칭',         hash: '#/mentor-matching',    group: '경력 개발' },
+      { icon: '🎯', title: '커리어 코칭',       hash: '#/career-coaching',    group: '경력 개발' },
+      { icon: '📈', title: 'IDP',               hash: '#/idp',                group: '경력 개발' },
+      { icon: '🧠', title: '스킬 인벤토리',     hash: '#/skill-inventory',    group: '경력 개발' },
+      { icon: '🗺️', title: '경력 개발 경로',   hash: '#/career-path',        group: '경력 개발' },
+      { icon: '📝', title: '특허 관리',         hash: '#/patent',             group: '혁신·기여' },
+      { icon: '🏆', title: '프로젝트 참여',     hash: '#/project-apply',      group: '혁신·기여' },
+    ],
+  },
+  {
+    id: 'performance', icon: '📊', nameKo: '성과 목표', name: 'Performance & Goals',
+    color: '#14B8A6', bg: 'rgba(20,184,166,.12)',
+    features: [
+      { icon: '🎯', title: 'OKR',               hash: '#/okr',                group: '목표' },
+      { icon: '🏁', title: '목표 설정',         hash: '#/goal-setting',       group: '목표' },
+      { icon: '📋', title: '성과 리뷰',         hash: '#/reviews',            group: '평가' },
+      { icon: '🔄', title: '동료 평가',         hash: '#/peer-review',        group: '평가' },
+      { icon: '📝', title: '자기평가',          hash: '#/self-assessment',    group: '평가' },
+      { icon: '🔬', title: '수습 평가',         hash: '#/probation',          group: '평가' },
+      { icon: '⚖️', title: '인사고과 이의',    hash: '#/review-appeal',      group: '평가' },
+      { icon: '🤝', title: '1:1 미팅',          hash: '#/one-on-one',         group: '코칭' },
+      { icon: '💬', title: '동료 면담',         hash: '#/meeting-note',       group: '코칭' },
+      { icon: '📈', title: '내 성장',           hash: '#/growth',             group: '성장 분석' },
+      { icon: '🧬', title: '진단 센터',         hash: '#/diagnostics',        group: '성장 분석' },
+      { icon: '🔍', title: 'HR 역량평가',       hash: '#/hr-competency',      group: '성장 분석' },
+      { icon: '📊', title: '성과 캘리브레이션', hash: '#/admin?tab=calibration', group: '관리자', roles: ['admin'] },
+    ],
+  },
+  {
+    id: 'experience', icon: '🌟', nameKo: '직원 경험', name: 'Employee Experience',
+    color: '#F97316', bg: 'rgba(249,115,22,.12)',
+    features: [
+      { icon: '🎪', title: '사내 동호회',       hash: '#/club',               group: '커뮤니티' },
+      { icon: '📖', title: '스터디 그룹',       hash: '#/study-group',        group: '커뮤니티' },
+      { icon: '☕', title: '커피챗',            hash: '#/coffee-chat',        group: '커뮤니티' },
+      { icon: '🍜', title: '팀 점심',           hash: '#/team-lunch',         group: '커뮤니티' },
+      { icon: '🏟️', title: '팀 빌딩',          hash: '#/team-building',      group: '커뮤니티' },
+      { icon: '🩺', title: '건강검진',          hash: '#/health-exam',        group: '건강·웰니스' },
+      { icon: '🏋️', title: '건강 프로그램',    hash: '#/health-program',     group: '건강·웰니스' },
+      { icon: '💙', title: '마음건강 체크인',   hash: '#/wellness-check',     group: '건강·웰니스' },
+      { icon: '🧠', title: '심리 상담',         hash: '#/counseling',         group: '건강·웰니스' },
+      { icon: '🏆', title: '포상 추천',         hash: '#/award',              group: '인정·포상' },
+      { icon: '👏', title: '칭찬 보내기',       hash: '#/kudos',              group: '인정·포상' },
+      { icon: '🌟', title: '동료 칭찬',         hash: '#/peer-recognition',   group: '인정·포상' },
+      { icon: '🎖️', title: '근속 포상',         hash: '#/tenure-award',       group: '인정·포상' },
+      { icon: '📊', title: '임직원 설문',       hash: '#/employee-survey',    group: '소통·제안' },
+      { icon: '💓', title: '펄스 서베이',       hash: '#/pulse-survey',       group: '소통·제안' },
+      { icon: '💡', title: '아이디어 제안',     hash: '#/idea-box',           group: '소통·제안' },
+      { icon: '🌿', title: '그린 활동',         hash: '#/green-activity',     group: '소통·제안' },
+      { icon: '🚨', title: '안전사고 보고',     hash: '#/safety-report',      group: '안전·신고' },
+      { icon: '🛡️', title: '익명신고',          hash: '#/harassment-report',  group: '안전·신고' },
+      { icon: '🎉', title: '사내 행사',         hash: '#/company-event',      group: '이벤트' },
+      { icon: '🏅', title: '사내 공모전',       hash: '#/contest',            group: '이벤트' },
+      { icon: '🗳️', title: '투표',             hash: '#/vote',               group: '이벤트' },
+      { icon: '🎰', title: '추첨',             hash: '#/raffle',              group: '이벤트' },
+      { icon: '📰', title: '사내 뉴스레터',    hash: '#/newsletter',          group: '소식' },
+      { icon: '📢', title: '공지사항',         hash: '#/notice',              group: '소식' },
+      { icon: '📋', title: '게시판',           hash: '#/bulletin',            group: '소식' },
+    ],
+  },
+  {
+    id: 'operations', icon: '⚙️', nameKo: '업무 지원', name: 'Operations & Support',
+    color: '#64748B', bg: 'rgba(100,116,139,.12)',
+    features: [
+      { icon: '✅', title: '결재',              hash: '#/approval',           group: '결재·문서' },
+      { icon: '📄', title: '회사 규정',         hash: '#/company-handbook',   group: '결재·문서' },
+      { icon: '🖨️', title: '명함 신청',         hash: '#/business-card',      group: '결재·문서' },
+      { icon: '🖥️', title: 'IT 지원',           hash: '#/it-support',         group: '업무 도구' },
+      { icon: '📦', title: '비품 신청',         hash: '#/supplies-request',   group: '업무 도구' },
+      { icon: '🚗', title: '차량 신청',         hash: '#/vehicle-request',    group: '업무 도구' },
+      { icon: '🏢', title: '회의실 예약',       hash: '#/room-booking',       group: '업무 도구' },
+      { icon: '💼', title: '자산 관리',         hash: '#/asset-mgmt',         group: '업무 도구' },
+      { icon: '📦', title: '내 자산',           hash: '#/asset',              group: '업무 도구' },
+      { icon: '⚖️', title: '노무 상담',         hash: '#/labor-consult',      group: '법무·노무' },
+      { icon: '🤖', title: 'AI 상담',           hash: '#/ai-consult',         group: '법무·노무' },
+      { icon: '📋', title: '업무 기록',         hash: '#/work-log',           group: '업무 기록' },
+      { icon: '📊', title: '업무 보고',         hash: '#/work-report',        group: '업무 기록' },
+      { icon: '🗺️', title: '팀 캘린더',        hash: '#/team-calendar',      group: '업무 기록' },
+      { icon: '🌏', title: '해외 발령',         hash: '#/overseas',           group: '특수 업무' },
+      { icon: '♻️', title: '업무 이관',        hash: '#/journey',             group: '특수 업무' },
+    ],
+  },
+  {
+    id: 'applicant', icon: '🧑‍💼', nameKo: '지원자 포털', name: 'Applicant Portal',
+    color: '#0EA5E9', bg: 'rgba(14,165,233,.12)',
+    features: [
+      { icon: '🏠', title: '지원자 홈',         hash: '#/applicant-home',     group: '지원' },
+      { icon: '📝', title: '내 지원현황',       hash: '#/my-application',     group: '지원' },
+      { icon: '💼', title: '커리어 프로필',     hash: '#/career',             group: '지원' },
+      { icon: '⚙️', title: '프로필 설정',       hash: '#/profile-settings',   group: '지원' },
+      { icon: '🧪', title: '적성 검사',         hash: '#/aptitude-test',      group: '검사' },
+      { icon: '🔍', title: '레퍼런스 체크',     hash: '#/applicant-reference', group: '검사' },
+      { icon: '🤝', title: '인터뷰 포털',       hash: '#/interview-portal',   group: '면접' },
+    ],
+  },
+  {
+    id: 'alumni', icon: '🎓', nameKo: '알럼나이', name: 'Alumni',
+    color: '#A855F7', bg: 'rgba(168,85,247,.12)',
+    features: [
+      { icon: '🏠', title: '알럼나이 홈',       hash: '#/alumni',             group: '알럼나이' },
+      { icon: '🔄', title: '부메랑 지원',       hash: '#/boomerang',          group: '알럼나이' },
+    ],
+  },
+  {
+    id: 'admin', icon: '🔧', nameKo: '어드민 센터', name: 'Admin Center',
+    color: '#EF4444', bg: 'rgba(239,68,68,.12)',
+    features: [
+      { icon: '📊', title: 'HR 대시보드',       hash: '#/admin?tab=hr-dashboard', group: '대시보드', roles: ['admin'] },
+      { icon: '👥', title: '직원 관리',         hash: '#/admin?tab=employees', group: '대시보드', roles: ['admin'] },
+      { icon: '📈', title: '분석',              hash: '#/analytics',           group: '대시보드', roles: ['admin'] },
+      { icon: '🏥', title: 'eNPS 대시보드',     hash: '#/admin?tab=enps',      group: '대시보드', roles: ['admin'] },
+      { icon: '🌡️', title: '조직건강',          hash: '#/admin?tab=org-health', group: '대시보드', roles: ['admin'] },
+      { icon: '📋', title: '평가 템플릿',       hash: '#/admin?tab=template-builder', group: '평가 설정', roles: ['admin'] },
+      { icon: '🔄', title: '평가 주기',         hash: '#/admin?tab=cycles',    group: '평가 설정', roles: ['admin'] },
+      { icon: '⚙️', title: '기능 설정',         hash: '#/admin?tab=config',    group: '시스템', roles: ['admin'] },
+      { icon: '🛡️', title: '권한 관리',         hash: '#/admin?tab=roles',     group: '시스템', roles: ['admin'] },
+      { icon: '📝', title: '설문 빌더',         hash: '#/admin?tab=survey-builder', group: '시스템', roles: ['admin'] },
+      { icon: '🧩', title: '모듈 빌더',         hash: '#/admin?tab=module-builder', group: '시스템', roles: ['admin'] },
+      { icon: '💼', title: '채용 관리',         hash: '#/admin?tab=recruitment', group: '채용·인재', roles: ['admin'] },
+      { icon: '🎰', title: '추첨 관리',         hash: '#/admin?tab=raffle',    group: '직원경험', roles: ['admin'] },
+      { icon: '📰', title: '뉴스레터 관리',     hash: '#/admin?tab=newsletter', group: '직원경험', roles: ['admin'] },
+      { icon: '📢', title: '공지 관리',         hash: '#/admin?tab=notice',    group: '직원경험', roles: ['admin'] },
+      { icon: '💸', title: '경비 승인',         hash: '#/admin?tab=expense',   group: '복지·보상', roles: ['admin'] },
+      { icon: '💰', title: '급여 관리',         hash: '#/admin?tab=payslip',   group: '복지·보상', roles: ['admin'] },
+      { icon: '📅', title: '휴가 관리',         hash: '#/admin?tab=leave',     group: '근태', roles: ['admin'] },
+      { icon: '⏰', title: '연장근무 관리',     hash: '#/admin?tab=overtime',  group: '근태', roles: ['admin'] },
+    ],
+  },
+];
+
+// ══════════════════════════════════════════════
+//  유틸
+// ══════════════════════════════════════════════
+function buildAppUrl(hash) {
+  return APP_BASE + hash;
+}
+
+function totalFeatures() {
+  return DOMAINS.reduce((s, d) => s + d.features.length, 0);
+}
+
+// ══════════════════════════════════════════════
+//  통계 배지 렌더
+// ══════════════════════════════════════════════
+function renderStats() {
+  const bar = document.getElementById('stats-bar');
+  const adminCount = DOMAINS.reduce((s,d) => s + d.features.filter(f=>f.roles).length, 0);
+  bar.innerHTML = [
+    ['🗂️ 도메인', DOMAINS.length],
+    ['⚡ 전체 기능', totalFeatures()],
+    ['👤 직원 기능', totalFeatures() - adminCount],
+    ['🔧 관리자 기능', adminCount],
+  ].map(([l,v]) => `<div class="stat-chip"><span>${l}</span><strong>${v}</strong></div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  마인드맵 뷰 렌더
+// ══════════════════════════════════════════════
+function renderMindmap(filter = '') {
+  const container = document.getElementById('mindmap-view');
+
+  const cards = DOMAINS.map(domain => {
+    const groups = {};
+    domain.features.forEach(f => {
+      if (!groups[f.group]) groups[f.group] = [];
+      groups[f.group].push(f);
+    });
+
+    // 필터링
+    let hasMatch = false;
+    const groupHtml = Object.entries(groups).map(([grp, items]) => {
+      const filtered = filter
+        ? items.filter(f => f.title.includes(filter) || grp.includes(filter) || domain.nameKo.includes(filter))
+        : items;
+      if (!filtered.length) return '';
+      hasMatch = true;
+
+      const links = filtered.map(f => {
+        const isAdmin = f.roles && f.roles.includes('admin');
+        const url = buildAppUrl(f.hash);
+        return `<a class="feature-link" href="${url}" style="--hover-color:${domain.color}">
+          <span class="feature-icon">${f.icon}</span>
+          <span>${highlight(f.title, filter)}</span>
+          ${isAdmin ? '<span class="admin-badge">관리자</span>' : ''}
+        </a>`;
+      }).join('');
+
+      return `<div class="subgroup-label" style="color:${domain.color}">${grp}</div>
+              <div class="feature-grid">${links}</div>`;
+    }).join('');
+
+    if (filter && !hasMatch) return '';
+
+    return `<div class="domain-card open" data-id="${domain.id}"
+               style="border-color:${domain.color}40">
+      <div class="domain-header" onclick="toggleDomain('${domain.id}')"
+           style="background:${domain.bg}">
+        <span class="domain-icon">${domain.icon}</span>
+        <div class="domain-meta">
+          <div class="domain-name-ko">${highlight(domain.nameKo, filter)}</div>
+          <div class="domain-name-en" style="color:${domain.color}">${domain.name}</div>
+        </div>
+        <span class="domain-count" style="background:${domain.color}22;color:${domain.color}">
+          ${domain.features.length}개
+        </span>
+        <span class="domain-arrow" style="color:${domain.color}">›</span>
+      </div>
+      <div class="domain-body">${groupHtml}</div>
+    </div>`;
+  }).filter(Boolean).join('');
+
+  container.innerHTML = cards || `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#64748B">
+    🔍 "<strong>${filter}</strong>" 검색 결과가 없습니다.
+  </div>`;
+}
+
+function highlight(text, q) {
+  if (!q) return text;
+  return text.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+}
+
+function toggleDomain(id) {
+  const card = document.querySelector(`.domain-card[data-id="${id}"]`);
+  if (card) card.classList.toggle('open');
+}
+
+// ══════════════════════════════════════════════
+//  테이블 뷰 렌더
+// ══════════════════════════════════════════════
+function renderTable(filter = '') {
+  const tbody = document.getElementById('table-body');
+  const rows = [];
+
+  DOMAINS.forEach(d => {
+    d.features.forEach(f => {
+      if (filter && !f.title.includes(filter) && !d.nameKo.includes(filter) && !(f.group||'').includes(filter)) return;
+      const isAdmin = f.roles && f.roles.includes('admin');
+      const url = buildAppUrl(f.hash);
+      rows.push(`<tr>
+        <td style="font-size:18px;line-height:1">${f.icon}</td>
+        <td><a href="${url}">${highlight(f.title, filter)}</a></td>
+        <td><span class="domain-chip" style="background:${d.bg};color:${d.color}">${d.nameKo}</span></td>
+        <td style="color:#94A3B8;font-size:12px">${f.group || '—'}</td>
+        <td style="font-size:12px">${isAdmin ? '<span style="color:#A5B4FC">관리자</span>' : '<span style="color:#6EE7B7">직원</span>'}</td>
+        <td style="font-family:monospace;font-size:11px;color:#64748B">${f.hash}</td>
+      </tr>`);
+    });
+  });
+
+  tbody.innerHTML = rows.length ? rows.join('') :
+    `<tr><td colspan="6" style="text-align:center;padding:40px;color:#64748B">검색 결과 없음</td></tr>`;
+}
+
+// ══════════════════════════════════════════════
+//  뷰 전환
+// ══════════════════════════════════════════════
+let currentView = 'mindmap';
+let currentFilter = '';
+
+function switchView(view) {
+  currentView = view;
+  document.getElementById('mindmap-view').style.display = view === 'mindmap' ? '' : 'none';
+  document.getElementById('table-view').style.display = view === 'table' ? '' : 'none';
+  document.querySelectorAll('.view-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === view);
+  });
+  if (view === 'table') renderTable(currentFilter);
+}
+
+document.querySelectorAll('.view-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchView(btn.dataset.view));
+});
+
+// ══════════════════════════════════════════════
+//  검색
+// ══════════════════════════════════════════════
+const searchInput = document.getElementById('search');
+let searchTimer;
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    currentFilter = searchInput.value.trim();
+    if (currentView === 'mindmap') renderMindmap(currentFilter);
+    else renderTable(currentFilter);
+  }, 180);
+});
+
+// ══════════════════════════════════════════════
+//  Back-to-top
+// ══════════════════════════════════════════════
+const backTop = document.getElementById('back-top');
+window.addEventListener('scroll', () => {
+  backTop.classList.toggle('visible', window.scrollY > 300);
+});
+
+// ══════════════════════════════════════════════
+//  초기화
+// ══════════════════════════════════════════════
+renderStats();
+renderMindmap();
+</script>
+</body>
+</html>

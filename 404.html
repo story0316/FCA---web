@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#4F46E5" />
+  <meta name="description" content="HR 역량 진단 OS — 조직 역량 진단·개발 플랫폼 v2" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/FCA---web/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="HR OS">
+  <link rel="apple-touch-icon" href="/FCA---web/icons/icon-192.svg">
+  <title>HR 역량 진단 OS</title>
+
+  <!-- Noto Sans KR (Pretendard 없을 때 폴백 — reset.css에서 Pretendard CDN 로드) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets (order matters: variables → reset → components → layouts) -->
+  <link rel="stylesheet" href="/FCA---web/css/variables.css" />
+  <link rel="stylesheet" href="/FCA---web/css/reset.css" />
+  <link rel="stylesheet" href="/FCA---web/css/components.css" />
+  <link rel="stylesheet" href="/FCA---web/css/mobile.css" />
+  <link rel="stylesheet" href="/FCA---web/css/dashboard.css" />
+  <link rel="stylesheet" href="/FCA---web/css/responsive.css" />
+
+  <style>
+    /* ── Bottom Navigation Bar ─────────────────────────────────────────────── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 900;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      height: calc(var(--bottom-nav-height, 58px) + var(--safe-bottom, 0px));
+      padding-bottom: var(--safe-bottom, 0px);
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(15,23,42,0.07);
+      transition: background var(--transition-base), border-color var(--transition-base);
+    }
+    .bottom-nav.hidden { display: none; }
+    [data-theme="dark"] .bottom-nav {
+      background: rgba(30,41,59,0.95);
+      border-top-color: rgba(255,255,255,0.07);
+    }
+
+    .bottom-nav a, .bottom-nav button {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      text-decoration: none;
+      color: var(--text-light, #94A3B8);
+      font-size: 0.595rem;
+      font-weight: 600;
+      font-family: var(--font-ko, 'Pretendard', sans-serif);
+      letter-spacing: -0.01em;
+      padding: 5px 4px 6px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: color 140ms ease;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+    }
+    /* 아이콘 래퍼 — 활성 탭 pill 배경 */
+    .bottom-nav a .nav-icon, .bottom-nav button .nav-icon {
+      width: 40px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      font-size: 1.25rem;
+      line-height: 1;
+      transition: background 140ms ease, transform 140ms ease;
+    }
+    .bottom-nav a.active .nav-icon, .bottom-nav button.active .nav-icon {
+      background: var(--primary-bg, #EEF2FF);
+    }
+    [data-theme="dark"] .bottom-nav a.active .nav-icon,
+    [data-theme="dark"] .bottom-nav button.active .nav-icon {
+      background: rgba(129,140,248,0.15);
+    }
+    .bottom-nav a:active .nav-icon, .bottom-nav button:active .nav-icon {
+      transform: scale(0.88);
+    }
+    .bottom-nav a.active, .bottom-nav button.active {
+      color: var(--primary, #4F46E5);
+    }
+    /* MODE 버튼은 작은 텍스트 pill */
+    .bottom-nav a[data-route="#/mode"] .nav-icon {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      background: var(--bg-subtle);
+      border-radius: 6px;
+      width: 32px;
+      height: 20px;
+      letter-spacing: 0;
+    }
+
+    /* ── Toast container ───────────────────────────────────────────────────── */
+    #toast-container {
+      position: fixed;
+      top: 68px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+      width: min(calc(100vw - 32px), 380px);
+    }
+
+    /* ── SPA root ──────────────────────────────────────────────────────────── */
+    #app {
+      min-height: 100vh;
+      padding-bottom: calc(var(--bottom-nav-height, 58px) + var(--safe-bottom, 0px));
+      transition: margin-left 0.2s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SPA root: all page content rendered here by app.js router -->
+  <div id="app"></div>
+
+  <!-- Toast notification layer -->
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- Desktop sidebar navigation (populated by app.js) -->
+  <nav id="side-nav" class="desktop-nav" aria-label="사이드 메뉴"></nav>
+
+  <!-- Bottom navigation (hidden on login screen; shown by app.js after auth) -->
+  <nav id="bottom-nav" class="bottom-nav hidden" aria-label="주 메뉴">
+    <!-- dynamically rendered by app.js -->
+  </nav>
+
+  <!-- Build timestamp injected by build.js; 0 = local dev (no cache busting) -->
+  <script>window.__BUILD_TS__ = 1785049829215;</script>
+
+  <!-- SPA bootstrap — ES module entry point -->
+  <!-- build.js replaces ?v=0 with ?v=<timestamp> so deploys bust the HTTP cache -->
+  <script type="module" src="/FCA---web/js/app.js?v=1785049829215"></script>
+
+  <!-- Service Worker registration with forced update detection -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/FCA---web/sw.js')
+          .then(reg => {
+            // Force the browser to check for a new SW on every page load.
+            // By default browsers skip the check if < 24h since last check —
+            // this override is essential for iOS PWA installed on Home Screen.
+            reg.update();
+
+            // When skipWaiting() fires in the new SW and it takes control,
+            // controllerchange fires here. Reload so fresh assets are used.
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+              window.location.reload();
+            });
+          })
+          .catch(() => {});
+      });
+    }
+  </script>
+
+</body>
+</html>

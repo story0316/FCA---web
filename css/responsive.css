@@ -1,0 +1,237 @@
+/* ============================================================
+   RESPONSIVE.CSS — HR Competency OS
+   Desktop-first enhancements (900px+, 1200px+)
+   Mobile-first base is in mobile.css
+   ============================================================ */
+
+/* ── 900px+ : Desktop layout ──────────────────────────────── */
+@media (min-width: 900px) {
+
+  /* ── Page shell ─────────────────────────────────────────── */
+  .page {
+    min-height: 100vh;
+  }
+
+  /* Top-bar: full-width header strip */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(var(--bg-rgb, 248,250,252), 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  [data-theme="dark"] .top-bar {
+    background: rgba(15,23,42,0.95);
+  }
+
+  /* Hide mobile back-arrow on primary pages (no parent) */
+  .top-bar .btn-ghost:first-child { display: none; }
+
+  /* ── Page content ───────────────────────────────────────── */
+  .page-content {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── Dashboard: 2-column layout ─────────────────────────── */
+  .dashboard-desktop-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* Right panel: sticky so it stays visible while scrolling the main feed */
+  #dash-panel {
+    position: sticky;
+    top: calc(var(--top-bar-height, 56px) + 16px);
+    max-height: calc(100vh - var(--top-bar-height, 56px) - 32px);
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  #dash-panel::-webkit-scrollbar { display: none; }
+
+  /* Quick actions: 4 columns */
+  .quick-actions {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+
+  /* Stats row: wrap nicely instead of scroll */
+  .stats-row {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  /* ── Cards / surfaces ───────────────────────────────────── */
+  .card-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .card-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  /* ── Assessment / results ───────────────────────────────── */
+  .results-group-scores {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+
+  /* Template grid: 3 columns */
+  .template-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* ── Radar chart ─────────────────────────────────────────── */
+  .radar-container {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* ── IDP page ───────────────────────────────────────────── */
+  .idp-desktop-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Analytics ──────────────────────────────────────────── */
+  .analytics-desktop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .heatmap-wrapper {
+    overflow-x: auto;
+    padding: 0;
+  }
+
+  /* ── Manager / Executive tables ─────────────────────────── */
+  .member-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* ── Manager page ───────────────────────────────────────── */
+  .manager-desktop-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Growth page ────────────────────────────────────────── */
+  .growth-desktop-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Goals / OKR ────────────────────────────────────────── */
+  .okr-desktop-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Admin dashboard ────────────────────────────────────── */
+  .admin-tab-scroll {
+    /* Wider scrollable tab strip */
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .admin-tab-scroll::-webkit-scrollbar { display: none; }
+
+  /* Employee table: show department column */
+  .col-dept { display: table-cell !important; }
+
+  /* ── Login page: centered card ──────────────────────────── */
+  .login-page {
+    justify-content: center;
+  }
+  .login-card {
+    box-shadow: var(--shadow-lg);
+    padding: 40px 36px;
+  }
+
+  /* ── Modal / bottom sheet: center on desktop ────────────── */
+  [style*="align-items:flex-end"] {
+    align-items: center !important;
+  }
+  [style*="align-items: flex-end"] {
+    align-items: center !important;
+  }
+}
+
+/* ── 1200px+ : Wide desktop ──────────────────────────────── */
+@media (min-width: 1200px) {
+  .page-content {
+    max-width: 1280px;
+    padding: 32px 48px;
+  }
+
+  .card-grid-3 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .member-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .results-group-scores {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+
+  .template-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+  /* ── Modal: bottom-sheet → centered dialog ──────────────── */
+  .modal-overlay {
+    align-items: center !important;
+    padding: 20px;
+  }
+  .modal-content, .modal-sheet {
+    border-radius: var(--radius-xl) !important;
+    max-width: 520px;
+    transform: scale(0.95) translateY(0) !important;
+    transition: transform var(--transition-base), opacity var(--transition-base) !important;
+    opacity: 0;
+  }
+  .modal-overlay.visible .modal-content,
+  .modal-overlay.visible .modal-sheet {
+    transform: scale(1) translateY(0) !important;
+    opacity: 1;
+  }
+  .modal-handle { display: none; }
+
+  /* Inline modals (overlay created via JS with flex-end style) */
+  /* Handled by .desktop-modal-center class */
+  .desktop-modal-center {
+    align-items: center !important;
+    padding: 24px !important;
+  }
+  .desktop-modal-center > div {
+    border-radius: var(--radius-xl) !important;
+    max-height: 85vh;
+  }
+}
+
+/* ── Utility: desktop-only / mobile-only ─────────────────── */
+.desktop-only { display: none !important; }
+.mobile-only  { display: block; }
+
+@media (min-width: 900px) {
+  .desktop-only { display: block !important; }
+  .mobile-only  { display: none !important; }
+}

@@ -1,0 +1,120 @@
+/* ============================================================
+   DASHBOARD.CSS — Dashboard-specific styles (Redesign)
+   ============================================================ */
+
+/* ── Heatmap ───────────────────────────────────────────────── */
+.heatmap-section { overflow: hidden; }
+.heatmap-legend { display: flex; align-items: center; gap: 6px; padding: 6px 0 14px; }
+.heatmap-legend-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 500; }
+.heatmap-legend-scale { display: flex; flex: 1; height: 8px; border-radius: var(--radius-full); overflow: hidden; }
+.heatmap-legend-scale-item { flex: 1; }
+
+/* Heatmap color scale */
+.score-1 { background: #FEE2E2; color: #991B1B; }
+.score-2 { background: #FECACA; color: #7F1D1D; }
+.score-3 { background: #FEF9C3; color: #713F12; }
+.score-4 { background: #BBF7D0; color: #14532D; }
+.score-5 { background: #86EFAC; color: #052e16; }
+
+/* ── Chart Legend ──────────────────────────────────────────── */
+.chart-legend {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+.chart-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.78rem; color: var(--text-muted); }
+.chart-legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.chart-legend-line { width: 22px; height: 2.5px; border-radius: 2px; flex-shrink: 0; }
+.legend-asis      { background: rgba(79,70,229,0.7); }
+.legend-tobe      { background: rgba(5,150,105,0.7); }
+.legend-gap       { background: rgba(220,38,38,0.45); }
+.legend-line-asis { background: #4F46E5; }
+.legend-line-tobe { background: #059669; border-top: 2px dashed #059669; height: 0; }
+
+/* ── Stats Grid ────────────────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 16px;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+.stat-card:hover { border-color: var(--border-strong); }
+.stat-card-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; letter-spacing: -0.01em; }
+.stat-card-value { font-size: 1.75rem; font-weight: 800; color: var(--primary); line-height: 1; margin-bottom: 4px; letter-spacing: -0.04em; }
+.stat-card-sub   { font-size: 0.7rem; color: var(--text-light); }
+.stat-card-trend { display: inline-flex; align-items: center; gap: 2px; font-size: 0.7rem; font-weight: 600; }
+.stat-card-trend.up   { color: var(--success); }
+.stat-card-trend.down { color: var(--danger); }
+
+@media (min-width: 600px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+
+/* ── Quick Status Bar ──────────────────────────────────────── */
+.status-bar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+.status-bar-item {
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.status-bar-dot   { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.status-bar-info  { flex: 1; min-width: 0; }
+.status-bar-name  { font-size: 0.76rem; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status-bar-count { font-size: 0.7rem; color: var(--text-muted); }
+
+/* ── Radar Mini ────────────────────────────────────────────── */
+.radar-mini-container { max-width: 250px; margin: 0 auto; }
+
+/* ── Activity Feed ─────────────────────────────────────────── */
+.activity-feed { display: flex; flex-direction: column; gap: 0; }
+.activity-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--divider);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background: var(--primary-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.activity-body { flex: 1; min-width: 0; }
+.activity-text { font-size: 0.82rem; color: var(--text); line-height: 1.45; letter-spacing: -0.01em; }
+.activity-time { font-size: 0.7rem; color: var(--text-light); margin-top: 2px; }
+
+/* ── Gap Summary Card ──────────────────────────────────────── */
+.gap-summary {
+  background: var(--danger-light);
+  border: 1px solid rgba(220,38,38,0.16);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 18px;
+}
+.gap-summary-title { font-size: 0.84rem; font-weight: 700; color: var(--danger); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+.gap-summary-list  { display: flex; flex-direction: column; gap: 7px; }
+.gap-summary-item  { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+.gap-summary-name  { color: var(--text-secondary); font-weight: 500; }
+.gap-summary-value { color: var(--danger); font-weight: 700; }
+
+/* ── Canvas ────────────────────────────────────────────────── */
+.chart-area { position: relative; width: 100%; padding: 0; }
+.chart-canvas-wrapper { position: relative; width: 100%; }

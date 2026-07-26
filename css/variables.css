@@ -1,0 +1,120 @@
+/* ── Dark mode ─────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --primary:        #818CF8;
+  --primary-hover:  #6366F1;
+  --primary-light:  #6366F1;
+  --primary-dark:   #4F46E5;
+  --primary-bg:     #1E1B4B;
+  --primary-border: #312E81;
+
+  --success:        #34D399;
+  --success-light:  #064E3B;
+  --warning:        #FCD34D;
+  --warning-light:  #451A03;
+  --danger:         #F87171;
+  --danger-light:   #450A0A;
+  --info:           #60A5FA;
+  --info-light:     #1E3A5F;
+
+  --bg:             #0F172A;
+  --bg-subtle:      #1E293B;
+  --surface:        #1E293B;
+  --surface-raised: #334155;
+  --card-bg:        #1E293B;
+  --border:         #334155;
+  --border-strong:  #475569;
+  --divider:        #1E293B;
+
+  --text:           #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --text-muted:     #94A3B8;
+  --text-light:     #64748B;
+  --text-xlight:    #475569;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 8px -2px rgba(0,0,0,0.5), 0 2px 4px -1px rgba(0,0,0,0.3);
+  --shadow-lg: 0 12px 20px -4px rgba(0,0,0,0.6), 0 4px 8px -2px rgba(0,0,0,0.4);
+  --shadow-xl: 0 24px 40px -8px rgba(0,0,0,0.7), 0 8px 16px -4px rgba(0,0,0,0.4);
+  --shadow-primary: 0 4px 16px rgba(129,140,248,0.3);
+
+  --radar-asis: rgba(129, 140, 248, 0.5);
+  --radar-tobe: rgba(52, 211, 153, 0.3);
+  --radar-gap:  rgba(248, 113, 113, 0.15);
+}
+
+:root {
+  /* ── Brand ─────────────────────────────────────────── */
+  --primary:        #4F46E5;
+  --primary-hover:  #4338CA;
+  --primary-light:  #6366F1;
+  --primary-dark:   #3730A3;
+  --primary-bg:     #EEF2FF;
+  --primary-border: #C7D2FE;
+
+  /* ── Semantic ──────────────────────────────────────── */
+  --success:        #059669;
+  --success-light:  #D1FAE5;
+  --warning:        #D97706;
+  --warning-light:  #FEF3C7;
+  --danger:         #DC2626;
+  --danger-light:   #FEE2E2;
+  --info:           #2563EB;
+  --info-light:     #DBEAFE;
+
+  /* ── Neutrals (Slate) ──────────────────────────────── */
+  --bg:             #F8FAFC;
+  --bg-subtle:      #F1F5F9;
+  --surface:        #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --card-bg:        #FFFFFF;    /* new pages use this alias */
+  --border:         #E2E8F0;
+  --border-strong:  #CBD5E1;
+  --divider:        #F1F5F9;
+
+  /* ── Text ──────────────────────────────────────────── */
+  --text:           #0F172A;
+  --text-secondary: #334155;
+  --text-muted:     #64748B;
+  --text-light:     #94A3B8;
+  --text-xlight:    #CBD5E1;
+
+  /* ── Shadows ───────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-sm: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.03);
+  --shadow-md: 0 4px 8px -2px rgba(15,23,42,0.08), 0 2px 4px -1px rgba(15,23,42,0.04);
+  --shadow-lg: 0 12px 20px -4px rgba(15,23,42,0.10), 0 4px 8px -2px rgba(15,23,42,0.05);
+  --shadow-xl: 0 24px 40px -8px rgba(15,23,42,0.12), 0 8px 16px -4px rgba(15,23,42,0.06);
+  --shadow-primary: 0 4px 16px rgba(79,70,229,0.24);
+
+  /* ── Border Radius ─────────────────────────────────── */
+  --radius-xs:   4px;
+  --radius-sm:   8px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   20px;
+  --radius-full: 9999px;
+
+  /* ── Typography ────────────────────────────────────── */
+  --font-ko: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ── Spacing ───────────────────────────────────────── */
+  --space-1: 4px; --space-2: 8px;  --space-3: 12px;
+  --space-4: 16px;--space-5: 20px; --space-6: 24px;
+  --space-8: 32px;--space-10: 40px;--space-12: 48px;
+
+  /* ── Layout ────────────────────────────────────────── */
+  --bottom-nav-height: 58px;
+  --top-bar-height:    60px;
+  --safe-bottom:       env(safe-area-inset-bottom, 0px);
+
+  /* ── Transitions ───────────────────────────────────── */
+  --transition-fast: 100ms ease;
+  --transition-base: 180ms ease;
+  --transition-slow: 320ms ease;
+
+  /* ── Charts ────────────────────────────────────────── */
+  --radar-asis: rgba(79, 70, 229, 0.42);
+  --radar-tobe: rgba(5, 150, 105, 0.22);
+  --radar-gap:  rgba(220, 38, 38, 0.10);
+}
